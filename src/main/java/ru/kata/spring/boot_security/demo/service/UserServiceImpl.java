@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
@@ -17,8 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -47,28 +47,4 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Transactional
-    public void addNewUser(User user) {
-        userRepository.save(user);
-    }
-
-    public User findById(Integer id) {
-
-        return userRepository.findById(id).orElse(null);
-    }
-
-    @Transactional
-    public void updateUser(Integer id, User user) {
-        user.setId(id);
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void deleteUser(Integer id) {
-        userRepository.deleteById(id);
-    }
 }
