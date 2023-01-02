@@ -24,6 +24,18 @@
   <input type="text" th:field="*{email}" id="email"/>
   <div style="color: red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Name error</div>
   <br/>
+
+  <p>
+    <label>Roles:
+      <input type="checkbox" name="roles"
+             th:each="role : ${allRoles}"
+             th:text="${role.name}"
+             th:value="${role.id}"
+             th:field="*{userRoles}"
+      />
+    </label>
+  </p>
+
   <br/>
   <input type="submit" value="Update"/>
 </form>

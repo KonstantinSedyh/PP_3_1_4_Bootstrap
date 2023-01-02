@@ -11,7 +11,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class AdminService implements UserService{
+public class AdminService implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

@@ -5,26 +5,33 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class UsersController {
     private final UserService userService;
     private final UserServiceImpl userServiceImpl;
 
+    private final RoleRepository roleRepository;
+
     @Autowired
-    public UsersController(UserService userService, UserServiceImpl userServiceImpl) {
+    public UsersController(UserService userService, UserServiceImpl userServiceImpl, RoleRepository roleRepository) {
         this.userService = userService;
         this.userServiceImpl = userServiceImpl;
+        this.roleRepository = roleRepository;
     }
 
     @GetMapping("/user")
-    public String userPage (Principal principal, Model model) {
+    public String userPage(Principal principal, Model model) {
         User user = userServiceImpl.findByUsername(principal.getName());
         model.addAttribute("user", user);
         return "user";
@@ -45,8 +52,17 @@ public class UsersController {
     }
 
     @GetMapping("/admin/new")
-    public String newUser(@ModelAttribute("user") User user) {
-        return "new";
+//    public String newUser(@ModelAttribute("user") User user) {
+//        return "new";
+//    }
+    public ModelAndView newUser() {
+        User user = new User();
+        ModelAndView mav = new ModelAndView("/new");
+        mav.addObject("user", user);
+        List<Role> roles = (List<Role>) roleRepository.findAll();
+        mav.addObject("allRoles", roles);
+
+        return mav;
     }
 
     @PostMapping("/admin")
@@ -59,15 +75,26 @@ public class UsersController {
     }
 
     @GetMapping("/admin/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Integer id) {
-        model.addAttribute("user", userService.findById(id));
-        return "edit";
+//    public String edit(Model model, @PathVariable("id") Integer id) {
+//        model.addAttribute("user", userService.findById(id));
+//        return "edit";
+//    }
+    public ModelAndView editUser(@PathVariable(name = "id") Integer id) {
+        User user = userService.findById(id);
+        ModelAndView mav = new ModelAndView("edit");
+        mav.addObject("user", user);
+
+        List<Role> roles = (List<Role>) roleRepository.findAll();
+
+        mav.addObject("allRoles", roles);
+
+        return mav;
     }
 
     @PatchMapping("/admin/{id}")
     public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
                          @PathVariable("id") Integer id) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "edit";
         }
         userService.updateUser(id, user);
