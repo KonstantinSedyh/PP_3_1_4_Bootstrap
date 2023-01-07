@@ -156,31 +156,31 @@
                                                                        class="form-control"
                                                                        id="password"/>
                                                                 <br>
-<!--                                                                <label for="roles"><b>Role</b></label>-->
-<!--                                                                <select multiple class="form-control form-control-sm"-->
-<!--                                                                        id="roles" name="roles" size="2"-->
-<!--                                                                        required>-->
-<!--                                                                    <option th:each="role: ${roles}"-->
-<!--                                                                            th:text="${role.authority}"-->
-<!--                                                                            th:value="${role.id}"-->
-<!--                                                                            th:selected="${user.userRoles.containsAll(role)}">-->
-<!--                                                                    </option>-->
-<!--                                                                </select>-->
-                                                                <div class="mb-3">
-                                                                    <label for="edit-role"
-                                                                           class="col-form-label d-flex justify-content-center"><b>Role</b>:</label>
-                                                                    <select multiple
-                                                                            name="roles"
-                                                                            id="edit-role"
-                                                                            class="form-select"
-                                                                            size="2">
-                                                                        <option
-                                                                                name="role"
-                                                                                th:each="role:${roles}"
-                                                                                th:value="${{role}}"
-                                                                                th:text="${role.authority}"/>
-                                                                    </select>
-                                                                </div>
+                                                                <label for="roles"><b>Role</b></label>
+                                                                <select multiple class="form-control form-control-sm"
+                                                                        id="roles" name="roles" size="2"
+                                                                        required>
+                                                                    <option th:each="role: ${roles}"
+                                                                            th:text="${role.authority}"
+                                                                            th:value="${role.id}"
+                                                                            th:selected="${user.userRoles.containsAll(role)}">
+                                                                    </option>
+                                                                </select>
+<!--                                                                <div class="mb-3">-->
+<!--                                                                    <label for="edit-role"-->
+<!--                                                                           class="col-form-label d-flex justify-content-center"><b>Role</b>:</label>-->
+<!--                                                                    <select multiple-->
+<!--                                                                            name="roles"-->
+<!--                                                                            id="edit-role"-->
+<!--                                                                            class="form-select"-->
+<!--                                                                            size="2">-->
+<!--                                                                        <option-->
+<!--                                                                                name="role"-->
+<!--                                                                                th:each="role:${roles}"-->
+<!--                                                                                th:value="${{role}}"-->
+<!--                                                                                th:text="${role.authority}"/>-->
+<!--                                                                    </select>-->
+<!--                                                                </div>-->
 
 
                                                                 <div class="modal-footer">
