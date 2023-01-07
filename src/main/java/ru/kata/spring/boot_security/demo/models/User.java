@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -25,11 +27,15 @@ public class User implements UserDetails {
     @Column(name = "username")
     private String username;
 
+    @NotEmpty(message = "Lastname should not be empty")
+    @Size(min = 2, max = 15, message = "Incorrect lastname (2 - 15 symbols)")
+    @Column(name = "lastname")
+    private String lastName;
+
     @NotEmpty(message = "Password should not be empty")
     @Size(min = 2, max = 500, message = "Incorrect password (2 - 500 symbols)")
     @Column(name = "password")
     private String password;
-
 
     @Min(value = 0, message = "Incorrect age (should be greater than 0)")
     @Column(name = "age")
@@ -41,6 +47,7 @@ public class User implements UserDetails {
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)
+//    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -62,8 +69,8 @@ public class User implements UserDetails {
         return userRoles;
     }
 
-    public void setUserRoles(List<Role> userRoles) {
-        this.userRoles = userRoles;
+    public void setUserRoles(Role userRole) {
+        this.userRoles.add(userRole);
     }
 
     public Integer getId() {
@@ -80,6 +87,14 @@ public class User implements UserDetails {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPassword() {
@@ -114,6 +129,15 @@ public class User implements UserDetails {
                 ", age=" + age +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    public boolean hasRole(String roleName) {
+        if (userRoles.stream()
+                .map(Role::getName)
+                .anyMatch(r -> r.equals(roleName))) {
+            return true;
+        }
+        return false;
     }
 
     @Override

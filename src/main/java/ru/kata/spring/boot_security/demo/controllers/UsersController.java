@@ -1,109 +1,38 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
-import javax.validation.Valid;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
-public class UsersController {
-    private final UserService userService;
-    private final UserServiceImpl userServiceImpl;
+public class   UsersController {
 
-    private final RoleRepository roleRepository;
+    private final UserServiceImpl userServiceImpl;
+    private final RoleService roleService;
 
     @Autowired
-    public UsersController(UserService userService, UserServiceImpl userServiceImpl, RoleRepository roleRepository) {
-        this.userService = userService;
+    public UsersController(UserServiceImpl userServiceImpl, RoleService roleService) {
         this.userServiceImpl = userServiceImpl;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
     @GetMapping("/user")
-    public String userPage(Principal principal, Model model) {
-        User user = userServiceImpl.findByUsername(principal.getName());
-        model.addAttribute("user", user);
+    public String userPage(@AuthenticationPrincipal UserDetails userDetails, Principal principal, Model model) {
+        model.addAttribute("currentUser", userServiceImpl.findByEmail(userDetails.getUsername()));
+        model.addAttribute("userDetails", userDetails);
+        model.addAttribute("user", roleService.findByName("ROLE_ADMIN"));
         return "user";
-    }
-
-    /////CRUD Operations///////////////////////////////////////
-
-    @GetMapping("/admin")
-    public String getAllUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        return "getAll";
-    }
-
-    @GetMapping("/admin/{id}")
-    public String find(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("user", userService.findById(id));
-        return "find";
-    }
-
-    @GetMapping("/admin/new")
-//    public String newUser(@ModelAttribute("user") User user) {
-//        return "new";
-//    }
-    public ModelAndView newUser() {
-        User user = new User();
-        ModelAndView mav = new ModelAndView("/new");
-        mav.addObject("user", user);
-        List<Role> roles = (List<Role>) roleRepository.findAll();
-        mav.addObject("allRoles", roles);
-
-        return mav;
-    }
-
-    @PostMapping("/admin")
-    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "/new";
-        }
-        userService.addNewUser(user);
-        return "redirect:/admin";
-    }
-
-    @GetMapping("/admin/{id}/edit")
-//    public String edit(Model model, @PathVariable("id") Integer id) {
-//        model.addAttribute("user", userService.findById(id));
-//        return "edit";
-//    }
-    public ModelAndView editUser(@PathVariable(name = "id") Integer id) {
-        User user = userService.findById(id);
-        ModelAndView mav = new ModelAndView("edit");
-        mav.addObject("user", user);
-
-        List<Role> roles = (List<Role>) roleRepository.findAll();
-
-        mav.addObject("allRoles", roles);
-
-        return mav;
-    }
-
-    @PatchMapping("/admin/{id}")
-    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
-                         @PathVariable("id") Integer id) {
-        if (bindingResult.hasErrors()) {
-            return "edit";
-        }
-        userService.updateUser(id, user);
-        return "redirect:/admin";
-    }
-
-    @DeleteMapping("/admin/{id}")
-    public String delete(@PathVariable("id") Integer id) {
-        userService.deleteUser(id);
-        return "redirect:/admin";
     }
 }
